@@ -29,41 +29,41 @@ import com.github.mustachejava.MustacheFactory;
 @ApplicationScoped
 public class MustacheViewEngine implements ViewEngine {
 
-    private static final String VIEW_BASE = "/WEB-INF/";
+	private static final String VIEW_BASE = "/WEB-INF/";
 
-    @Inject
-    private ServletContext servletContext;
+	@Inject
+	private ServletContext servletContext;
 
 	private MustacheFactory factory;
 
-    public MustacheViewEngine() {
-    	factory = new CustomMustacheFactory();
-    }
+	public MustacheViewEngine() {
+		factory = new CustomMustacheFactory();
+	}
 
-    @Override
-    public boolean supports(String view) {
-        return view.endsWith("mustache");
-    }
+	@Override
+	public boolean supports(String view) {
+		return view.endsWith("mustache");
+	}
 
-    @Override
-    public void processView(ViewEngineContext context) throws ViewEngineException {
-    	Mustache mustache = factory.compile(context.getView());
-    	try {
+	@Override
+	public void processView(ViewEngineContext context) throws ViewEngineException {
+		Mustache mustache = factory.compile(context.getView());
+		try {
 			Writer writer = new OutputStreamWriter(context.getResponse().getOutputStream());
 			mustache.execute(writer, context.getModels()).flush();
 		} catch (IOException e) {
 			throw new ViewEngineException(e);
 		}
-    }
-    
-    private class CustomMustacheFactory extends DefaultMustacheFactory {
-    	@Override
-    	public Reader getReader(String resourceName) {
-    		InputStream is = servletContext.getResourceAsStream(VIEW_BASE + resourceName); 
-    		if (is != null) {
-    			return new BufferedReader(new InputStreamReader(is, UTF_8));
-    		} 
-    		return super.getReader(resourceName);
-    	}
-    }
+	}
+
+	private class CustomMustacheFactory extends DefaultMustacheFactory {
+		@Override
+		public Reader getReader(String resourceName) {
+			InputStream is = servletContext.getResourceAsStream(VIEW_BASE + resourceName);
+			if (is != null) {
+				return new BufferedReader(new InputStreamReader(is, UTF_8));
+			}
+			return super.getReader(resourceName);
+		}
+	}
 }
