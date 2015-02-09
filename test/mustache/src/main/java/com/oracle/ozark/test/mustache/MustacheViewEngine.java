@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 
@@ -49,7 +50,7 @@ public class MustacheViewEngine implements ViewEngine {
 	public void processView(ViewEngineContext context) throws ViewEngineException {
 		Mustache mustache = factory.compile(context.getView());
 		try {
-			Writer writer = new OutputStreamWriter(context.getResponse().getOutputStream());
+			Writer writer = context.getResponse().getWriter();
 			mustache.execute(writer, context.getModels()).flush();
 		} catch (IOException e) {
 			throw new ViewEngineException(e);
