@@ -24,7 +24,7 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 @ApplicationScoped
 public class ThymeleafViewEngine implements ViewEngine {
 
-	private static final String VIEW_BASE = "/WEB-INF/";
+	private static final String VIEW_BASE = "/WEB-INF/views/";
 
 	@Inject
 	private ServletContext servletContext;

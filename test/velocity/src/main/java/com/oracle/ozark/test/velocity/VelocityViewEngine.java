@@ -1,8 +1,6 @@
 package com.oracle.ozark.test.velocity;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -24,7 +22,7 @@ import org.apache.velocity.app.VelocityEngine;
 @ApplicationScoped
 public class VelocityViewEngine implements ViewEngine {
 
-	private static final String VIEW_BASE = "/WEB-INF/";
+	private static final String VIEW_BASE = "/WEB-INF/views/";
 
 	@Inject
 	private ServletContext servletContext;

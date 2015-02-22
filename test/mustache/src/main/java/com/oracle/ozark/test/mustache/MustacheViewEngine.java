@@ -6,8 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 
@@ -30,7 +28,7 @@ import com.github.mustachejava.MustacheFactory;
 @ApplicationScoped
 public class MustacheViewEngine implements ViewEngine {
 
-	private static final String VIEW_BASE = "/WEB-INF/";
+	private static final String VIEW_BASE = "/WEB-INF/views/";
 
 	@Inject
 	private ServletContext servletContext;
