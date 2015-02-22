@@ -3,8 +3,15 @@ ozark/.idea
 ozark/target
 ozark-sample/target/
 ozark-sample/.idea
+ozark/ozark.iml
+ozark/pom.iml
 /api/target/
 /test/jsp/target/
 /test/facelets/target/
 /test/target/
 /test/sample/target/
+/test/mustache/target/
+**/.classpath
+**/.project
+**/.settings/
+**/*.iml
