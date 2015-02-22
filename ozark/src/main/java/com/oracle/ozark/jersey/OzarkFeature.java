@@ -39,7 +39,6 @@
  */
 package com.oracle.ozark.jersey;
 
-import com.oracle.ozark.core.StringWriterInterceptor;
 import com.oracle.ozark.core.ViewResponseFilter;
 import com.oracle.ozark.core.ViewableWriter;
 import com.oracle.ozark.mapper.ConstraintViolationMapper;
@@ -55,7 +54,12 @@ import javax.ws.rs.core.FeatureContext;
 import java.util.Arrays;
 
 /**
- * Class OzarkFeature.
+ * <p>Jersey feature that sets up the JAX-RS pipeline for MVC processing using one
+ * or more providers. This feature is enabled only if any of the classes or methods
+ * in the application has an instance of the {@link javax.mvc.Controller} annotation.</p>
+ *
+ * <p>Takes advantage of the {@link org.glassfish.jersey.internal.spi.ForcedAutoDiscoverable}
+ * SPI in Jersey.</p>
  *
  * @author Santiago Pericas-Geertsen
  */
@@ -66,13 +70,12 @@ public class OzarkFeature implements ForcedAutoDiscoverable {
     @Override
     public void configure(FeatureContext context) {
         final Configuration config = context.getConfiguration();
-        if (config.isRegistered(StringWriterInterceptor.class)) {
+        if (config.isRegistered(ViewResponseFilter.class)) {
             return;     // already registered!
         }
         final boolean enableOzark = config.getClasses().stream().anyMatch(this::isController)
-            || config.getInstances().stream().map(o -> o.getClass()).anyMatch(this::isController);
+                || config.getInstances().stream().map(o -> o.getClass()).anyMatch(this::isController);
         if (enableOzark) {
-            context.register(StringWriterInterceptor.class);
             context.register(ViewResponseFilter.class);
             context.register(ViewableWriter.class);
             context.register(ConstraintViolationMapper.class);

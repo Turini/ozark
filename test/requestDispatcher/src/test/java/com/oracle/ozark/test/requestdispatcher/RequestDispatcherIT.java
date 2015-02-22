@@ -37,37 +37,39 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.oracle.ozark.core;
+package com.oracle.ozark.test.requestdispatcher;
 
-import javax.inject.Inject;
-import javax.mvc.Controller;
-import javax.mvc.Viewable;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.ext.WriterInterceptor;
-import javax.ws.rs.ext.WriterInterceptorContext;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.junit.After;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Class StringWriterInterceptor.
- *
- * @author Santiago Pericas-Geertsen
+ * Integration test for RequestDispatcher defaulting.
+ * 
+ * @author Manfred Riem
  */
-@Controller
-public class StringWriterInterceptor implements WriterInterceptor {
+public class RequestDispatcherIT {
+    
+    private String webUrl;
+    private WebClient webClient;
 
-    @Inject
-    private ViewableWriter writer;
+    @Before
+    public void setUp() {
+        webUrl = System.getProperty("integration.url");
+        webClient = new WebClient();
+    }
 
-    @Override
-    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
-        final Object entity = context.getEntity();
-        final Annotation[] annotations = context.getAnnotations();
-        if (entity instanceof String) {
-            writer.writeTo(new Viewable((String) entity), Viewable.class, Viewable.class, annotations,
-                    context.getMediaType(), context.getHeaders(), context.getOutputStream());
-        } else {
-            context.proceed();
-        }
+    @After
+    public void tearDown() {
+        webClient.closeAllWindows();
+    }
+
+    @Test
+    public void testView1() throws Exception {
+        final HtmlPage page = webClient.getPage(webUrl + "resources/requestDispatcher/view1/1");
+        assertTrue(page.asXml().contains("RequestDispatcher defaulting"));
     }
 }

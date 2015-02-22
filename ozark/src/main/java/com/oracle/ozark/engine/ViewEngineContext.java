@@ -42,9 +42,13 @@ package com.oracle.ozark.engine;
 import javax.mvc.Models;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Configuration;
+import javax.ws.rs.core.UriInfo;
 
 /**
- * Class ViewEngineContext.
+ * Implementation of {@link javax.mvc.engine.ViewEngineContext}. Provides all the information
+ * needed for a view engine to process a view.
  *
  * @author Santiago Pericas-Geertsen
  */
@@ -58,11 +62,31 @@ public class ViewEngineContext implements javax.mvc.engine.ViewEngineContext {
 
     private final HttpServletResponse response;
 
-    public ViewEngineContext(String view, Models models, HttpServletRequest request, HttpServletResponse response) {
+    private final UriInfo uriInfo;
+
+    private final ResourceInfo resourceInfo;
+
+    private final Configuration configuration;
+
+    /**
+     * Constructor for view engine contexts.
+     *
+     * @param view Name of view.
+     * @param models Instance of models.
+     * @param request HTTP servlet request.
+     * @param response HTTP servlet response.
+     * @param uriInfo URI info about the request.
+     * @param resourceInfo Resource matched info.
+     */
+    public ViewEngineContext(String view, Models models, HttpServletRequest request, HttpServletResponse response,
+                             UriInfo uriInfo, ResourceInfo resourceInfo, Configuration configuration) {
         this.view = view;
         this.models = models;
         this.request = request;
         this.response = response;
+        this.uriInfo = uriInfo;
+        this.resourceInfo = resourceInfo;
+        this.configuration = configuration;
     }
 
     @Override
@@ -83,5 +107,20 @@ public class ViewEngineContext implements javax.mvc.engine.ViewEngineContext {
     @Override
     public HttpServletResponse getResponse() {
         return response;
+    }
+
+    @Override
+    public UriInfo getUriInfo() {
+        return uriInfo;
+    }
+
+    @Override
+    public ResourceInfo getResourceInfo() {
+        return resourceInfo;
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+        return configuration;
     }
 }

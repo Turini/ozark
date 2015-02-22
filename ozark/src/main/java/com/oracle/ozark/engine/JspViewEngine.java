@@ -54,23 +54,36 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Class JspViewEngine.
+ * Implementation of JSP view engine. Uses a {@link javax.servlet.RequestDispatcher}
+ * to forward the request back to the servlet container. Location of JSP pages is
+ * assumed relative to the {@code WEB-INF} directory in the archive.
  *
  * @author Santiago Pericas-Geertsen
  */
 @Priority(Priorities.DEFAULT)
-public class JspViewEngine implements ViewEngine {
-
-    private static final String VIEW_BASE = "/WEB-INF/";
+public class JspViewEngine extends ViewEngineBase {
 
     @Inject
     private ServletContext servletContext;
 
+    /**
+     * Assumes that any view that ends with {@code jsp} or {@code jspx} is a JSP.
+     *
+     * @param view the name of the view.
+     * @return {@code true} if supported or {@code false} if not.
+     */
     @Override
     public boolean supports(String view) {
         return view.endsWith("jsp") || view.endsWith("jspx");
     }
 
+    /**
+     * Sets attributes in request based on {@link javax.mvc.Models} and forwards
+     * request to servlet container.
+     *
+     * @param context view engine context.
+     * @throws ViewEngineException if any error occurs.
+     */
     @Override
     public void processView(ViewEngineContext context) throws ViewEngineException {
         final Models models = context.getModels();
@@ -82,7 +95,8 @@ public class JspViewEngine implements ViewEngine {
             request.setAttribute(name, models.get(name));
         }
         // Forward request to servlet engine to process JSP
-        RequestDispatcher rd = servletContext.getRequestDispatcher(VIEW_BASE + context.getView());
+        RequestDispatcher rd = servletContext.getRequestDispatcher(
+                getViewFolder(context.getConfiguration()) + context.getView());
         try {
             rd.forward(request, response);
         } catch (ServletException | IOException e) {

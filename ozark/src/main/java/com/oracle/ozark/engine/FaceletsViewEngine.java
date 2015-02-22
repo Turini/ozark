@@ -43,7 +43,6 @@ import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.mvc.Models;
 import javax.mvc.engine.Priorities;
-import javax.mvc.engine.ViewEngine;
 import javax.mvc.engine.ViewEngineContext;
 import javax.mvc.engine.ViewEngineException;
 import javax.servlet.RequestDispatcher;
@@ -54,21 +53,36 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Class FaceletsViewEngine.
+ * Implementation of JSF Facelets view engine. Uses a {@link javax.servlet.RequestDispatcher}
+ * to forward the request back to the servlet container.
  *
+ * @author Manfred Riem
  * @author Santiago Pericas-Geertsen
  */
 @Priority(Priorities.DEFAULT)
-public class FaceletsViewEngine implements ViewEngine {
+public class FaceletsViewEngine extends ViewEngineBase {
 
     @Inject
     private ServletContext servletContext;
 
+    /**
+     * Assumes that any view that ends with {@code xhtml} is a facelet.
+     *
+     * @param view the name of the view.
+     * @return {@code true} if supported or {@code false} if not.
+     */
     @Override
     public boolean supports(String view) {
         return view.endsWith("xhtml");
     }
 
+    /**
+     * Sets attributes in request based on {@link javax.mvc.Models} and forwards
+     * request to servlet container.
+     *
+     * @param context view engine context.
+     * @throws ViewEngineException if any error occurs.
+     */
     @Override
     public void processView(ViewEngineContext context) throws ViewEngineException {
         final Models models = context.getModels();
@@ -78,7 +92,8 @@ public class FaceletsViewEngine implements ViewEngine {
         for (String name : models) {
             request.setAttribute(name, models.get(name));
         }
-        RequestDispatcher rd = servletContext.getRequestDispatcher(context.getView());
+        RequestDispatcher rd = servletContext.getRequestDispatcher(
+                getViewFolder(context.getConfiguration()) + context.getView());
         try {
             rd.forward(request, response);
         } catch (ServletException | IOException e) {
